@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Display a runtext with double-buffering.
-from samplebase import SampleBase
-from rgbmatrix import graphics
+from python.samples import SampleBase
+from python.rgbmatrix import graphics
 import time
 
 
@@ -13,7 +13,7 @@ class RunText(SampleBase):
     def run(self):
         offscreen_canvas = self.matrix.CreateFrameCanvas()
         font = graphics.Font()
-        font.LoadFont("../../fonts/10x20.bdf")
+        font.LoadFont("./fonts/10x20.bdf")
         textColor = graphics.Color(255, 255, 0)
         pos = offscreen_canvas.width
         my_text = self.args.text
