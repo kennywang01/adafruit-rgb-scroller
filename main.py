@@ -1,25 +1,20 @@
 import time
 from python.samples.samplebase import SampleBase
-from client import AwsClient
 from parser import parse_emoji_text
 from messages import read_messages
 import random
 
 EMOJI_TEXT_SPACING = 2
 
-messages = read_messages()
+messages_text = read_messages()
+
 
 class ImageScroller(SampleBase):
     def __init__(self, *args, **kwargs):
         super(ImageScroller, self).__init__(*args, **kwargs)
-        self.client = AwsClient()
 
     def run(self):
-        text = self.client.get_text()
-
-        if not text:
-            text = random.choice(messages)
-
+        text = random.choice(messages_text)
         drawings = parse_emoji_text(text)
         canvas = self.matrix.CreateFrameCanvas()
         xpos = canvas.width
@@ -38,9 +33,10 @@ class ImageScroller(SampleBase):
             # scroll content left
             xpos -= 1
 
-            # if fallen off screen, go back to right side
+            # if fallen off screen, go back to right side, get new text
             if (xpos + total_len < 0):
                 xpos = canvas.width
+                text = random.choice(messages_text)
 
             canvas = self.matrix.SwapOnVSync(canvas)
             time.sleep(0.05)
