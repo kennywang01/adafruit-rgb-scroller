@@ -1,15 +1,16 @@
-import csv
 import base64
 from io import BytesIO
 import time
 from python.samples.samplebase import SampleBase
 from PIL import Image
 import json
+import cv2
+import np
 
 with open("emojis.json","r") as emojis_file:
-    emojis = json.loads(emojis_file)
+    emojis = json.load(emojis_file)
 
-base64_string = emojis["U+1F600"]
+base64_string = emojis["U+1F600"].partition("data:image/png;base64,")[2]
 
 class ImageScroller(SampleBase):
     def __init__(self, *args, **kwargs):
@@ -19,7 +20,10 @@ class ImageScroller(SampleBase):
         image_data = base64.b64decode(base64_string)
         image_stream = BytesIO(image_data)
         image = Image.open(image_stream).convert('RGB')
-        image.resize((self.matrix.width, self.matrix.height), Image.ANTIALIAS)
+        cv2_im = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
+        cv2_im[np.where(cv2_im[:, :, 3] == 0)] = (0, 0, 0, 255)
+        final_im = Image.fromarray(cv2_im)
+        final_im.resize((self.matrix.width, self.matrix.height), Image.ANTIALIAS)
 
         double_buffer = self.matrix.CreateFrameCanvas()
         img_width, img_height = image.size
