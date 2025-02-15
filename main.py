@@ -1,5 +1,4 @@
 import time
-from collections import deque
 from python.samples.samplebase import SampleBase
 from python.rgbmatrix import graphics
 from client import AwsClient
@@ -25,31 +24,18 @@ class ImageScroller(SampleBase):
             # display content
             canvas.Clear()
             spacing = 0
-
             for drawing in drawings:
-                drawing.set_xpos(xpos + spacing)
-
-                # check if drawing is in frame
-                spill_left = drawing.xpos < 0
-                spill_right = drawing.xpos > canvas.width
-                in_frame = not (spill_left or spill_right)
-
-                if in_frame:
-                    drawing.draw(canvas)
-                    spacing += drawing.length + EMOJI_TEXT_SPACING
-                elif spill_right:
-                    # we don't need to look at rest of drawings out of frame
-                    break
-
+                drawing.draw(canvas, xpos + spacing)
+                spacing += drawing.length + EMOJI_TEXT_SPACING
 
             # length is sum of lengths of text and emojis altogether, and space between emoji and text
-            # total_len = sum([drawing.length for drawing in in_frame_drawings]) + EMOJI_TEXT_SPACING*(len(drawings)-1)
+            total_len = sum([drawing.length for drawing in drawings]) + EMOJI_TEXT_SPACING*(len(drawings)-1)
 
             # scroll content left
             xpos -= 1
 
-            # if last drawing spill left, go back to right side
-            if (drawings[-1].xpos or canvas.width) + (drawing[-1].length or 1) < 0:
+            # if fallen off screen, go back to right side
+            if (xpos + total_len < 0):
                 xpos = canvas.width
 
             canvas = self.matrix.SwapOnVSync(canvas)
