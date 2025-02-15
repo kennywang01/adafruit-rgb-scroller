@@ -17,25 +17,31 @@ with open("emojis.json","r") as emojis_file:
     emoji_images = json.load(emojis_file)
 
 class Drawing(ABC):
+    length: int
+    xpos: int
+
     @abstractmethod
     def __init__(self, content):
         pass
     
     @abstractmethod
-    def draw(self, canvas, xpos):
+    def draw(self, canvas):
         pass
+    
+    def set_xpos(self, xpos):
+        self.xpos = xpos
 
 class TextDrawing(Drawing):
-    length: int
 
     def  __init__(self, content):
         self.text = content
         self.length = None # length is given by graphics driver
+        self.xpos = None
 
-    def draw(self, canvas, xpos):
+    def draw(self, canvas):
         font = graphics.Font()
         font.LoadFont("./fonts/10x20.bdf")
-        self.length = graphics.DrawText(canvas, font, xpos, TEXT_Y_POS, FONT_COLOR, self.text)
+        self.length = graphics.DrawText(canvas, font, self.xpos, TEXT_Y_POS, FONT_COLOR, self.text)
 
 class EmojiDrawing(Drawing):
 
@@ -53,6 +59,7 @@ class EmojiDrawing(Drawing):
 
         self.emoji = img_rgb
         self.length = EMOJI_DIMENSION
+        self.xpos = None
 
-    def draw(self, canvas, xpos):
-        canvas.SetImage(self.emoji, xpos, IMAGE_Y_POS)
+    def draw(self, canvas):
+        canvas.SetImage(self.emoji, self.xpos, IMAGE_Y_POS)
