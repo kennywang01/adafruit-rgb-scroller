@@ -1,13 +1,13 @@
 import time
 from python.samples.samplebase import SampleBase
-from python.rgbmatrix import graphics
 from client import AwsClient
 from parser import parse_emoji_text
-from PIL import Image
-import json
-import cv2
+from messages import read_messages
+import random
 
 EMOJI_TEXT_SPACING = 2
+
+messages = read_messages()
 
 class ImageScroller(SampleBase):
     def __init__(self, *args, **kwargs):
@@ -16,6 +16,10 @@ class ImageScroller(SampleBase):
 
     def run(self):
         text = self.client.get_text()
+
+        if not text:
+            text = random.choice(messages)
+
         drawings = parse_emoji_text(text)
         canvas = self.matrix.CreateFrameCanvas()
         xpos = canvas.width

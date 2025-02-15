@@ -27,15 +27,16 @@ class Drawing(ABC):
 
 class TextDrawing(Drawing):
     length: int
+    font = graphics.Font()
+    font.LoadFont("./fonts/10x20.bdf")
 
     def  __init__(self, content):
         self.text = content
         self.length = None # length is given by graphics driver
 
     def draw(self, canvas, xpos):
-        font = graphics.Font()
-        font.LoadFont("./fonts/10x20.bdf")
-        self.length = graphics.DrawText(canvas, font, xpos, TEXT_Y_POS, FONT_COLOR, self.text)
+        
+        self.length = graphics.DrawText(canvas, TextDrawing.font, xpos, TEXT_Y_POS, FONT_COLOR, self.text)
 
 class EmojiDrawing(Drawing):
 
