@@ -37,6 +37,7 @@ class ImageScroller(SampleBase):
             if (xpos + total_len < 0):
                 xpos = canvas.width
                 text = random.choice(messages_text)
+                drawings = parse_emoji_text(text)
 
             canvas = self.matrix.SwapOnVSync(canvas)
             time.sleep(0.05)
