@@ -23,8 +23,10 @@ class ImageScroller(SampleBase):
         while True:
             # display content
             canvas.Clear()
+            spacing = 0
             for drawing in drawings:
-                drawing.draw(canvas, xpos)
+                drawing.draw(canvas, xpos + spacing)
+                spacing += drawing.length + EMOJI_TEXT_SPACING
 
             # length is sum of lengths of text and emojis altogether, and space between emoji and text
             total_len = sum([drawing.length for drawing in drawings]) + EMOJI_TEXT_SPACING*(len(drawings)-1)
