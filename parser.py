@@ -1,15 +1,23 @@
 import emoji
 from drawings import TextDrawing, EmojiDrawing
+import functools
+import operator
+import re
+
+def tokenize(text):
+    # tokenize text, whitespace, and emojis
+    whitespace_re = re.compile(r'(\S+)')
+    split_emoji = emoji.get_emoji_regexp().split(text)
+    split_whitespace = [list(whitespace_re.split(substr)) for substr in split_emoji]
+    tokens = functools.reduce(operator.concat, split_whitespace)
+    return [t for t in tokens if t]  # ignore empty strings
 
 def parse_emoji_text(text):
-    split_text = emoji.get_emoji_regexp().split(text)
+    tokens = tokenize(text)
     drawings = []
 
-    for i,t in enumerate(split_text):
-        if not t: # skip empty strings
-            continue
-
-        elif emoji.is_emoji(t):
+    for i,t in enumerate(tokens):
+        if emoji.is_emoji(t):
         # collect all unicode chars which make up emoji
             emoji_unicode_chars = []
 
@@ -25,3 +33,6 @@ def parse_emoji_text(text):
             drawings.append(text_drawing)
         
     return drawings
+
+if __name__ == "__main__":
+    print(tokenize("😍Hello 👪  🇲🇶world!"))

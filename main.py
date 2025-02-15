@@ -25,7 +25,12 @@ class ImageScroller(SampleBase):
             canvas.Clear()
             spacing = 0
             for drawing in drawings:
-                drawing.draw(canvas, xpos + spacing)
+                next_xpos = xpos + spacing
+
+                # only render drawing if it's in frame
+                if 0 <= next_xpos <= canvas.width:
+                    drawing.draw(canvas, xpos + spacing)
+
                 spacing += drawing.length + EMOJI_TEXT_SPACING
 
             # length is sum of lengths of text and emojis altogether, and space between emoji and text
