@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # Display a runtext with double-buffering.
-from python.samples import SampleBase
+from python.samples.samplebase import SampleBase
 from python.rgbmatrix import graphics
 import time
 
@@ -16,11 +16,11 @@ class RunText(SampleBase):
         font.LoadFont("./fonts/10x20.bdf")
         textColor = graphics.Color(255, 255, 0)
         pos = offscreen_canvas.width
-        my_text = self.args.text
+        my_text = self.args.text + "\U0001f600"
 
         while True:
             offscreen_canvas.Clear()
-            len = graphics.DrawText(offscreen_canvas, font, pos, 10, textColor, my_text)
+            len = graphics.DrawText(offscreen_canvas, font, pos,22, textColor, my_text)
             pos -= 1
             if (pos + len < 0):
                 pos = offscreen_canvas.width
