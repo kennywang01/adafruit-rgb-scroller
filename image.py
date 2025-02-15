@@ -2,44 +2,57 @@ import base64
 from io import BytesIO
 import time
 from python.samples.samplebase import SampleBase
+from python.rgbmatrix import graphics
 from PIL import Image
 import json
 import cv2
-import np
 
 with open("emojis.json","r") as emojis_file:
     emojis = json.load(emojis_file)
 
 base64_string = emojis["U+1F600"].partition("data:image/png;base64,")[2]
+my_text = "Hello!"
 
 class ImageScroller(SampleBase):
     def __init__(self, *args, **kwargs):
         super(ImageScroller, self).__init__(*args, **kwargs)
 
     def run(self):
+
+        # prepare text
+        font = graphics.Font()
+        font.LoadFont("./fonts/10x20.bdf")
+        textColor = graphics.Color(255, 105, 180) # barbie pink!
+
+        # prepare emoji
         image_data = base64.b64decode(base64_string)
         image_stream = BytesIO(image_data)
-        image = Image.open(image_stream).convert('RGB')
-        cv2_im = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
-        cv2_im[np.where(cv2_im[:, :, 3] == 0)] = (0, 0, 0, 255)
-        final_im = Image.fromarray(cv2_im)
-        final_im.resize((self.matrix.width, self.matrix.height), Image.ANTIALIAS)
+        image = Image.open(image_stream).convert('RGBA')
+        pixels = image.getdata()
+        new_pixels = [(r, g, b) if a != 0 else (0, 0, 0) for r, g, b, a in pixels]
+        img_rgb = Image.new("RGB", image.size)
+        img_rgb.putdata(new_pixels)
+    
+        img_rgb = img_rgb.resize((16, 16), Image.ANTIALIAS)
 
-        double_buffer = self.matrix.CreateFrameCanvas()
-        img_width, img_height = image.size
+        img_width, img_height = img_rgb.size
+
+        canvas = self.matrix.CreateFrameCanvas()
+        
 
         # let's scroll
-        xpos = 0
+        xpos = canvas.width
         while True:
-            xpos += 1
-            if (xpos > img_width):
-                xpos = 0
+            canvas.Clear()
+            text_len = graphics.DrawText(canvas, font, xpos,22, textColor, my_text)
+            canvas.SetImage(img_rgb, xpos + text_len + 2, 5)
+            xpos -= 1
 
-            double_buffer.SetImage(image, -xpos)
-            double_buffer.SetImage(image, -xpos + img_width)
+            if (xpos + text_len + 2 + img_width < 0):
+                xpos = canvas.width
 
-            double_buffer = self.matrix.SwapOnVSync(double_buffer)
-            time.sleep(0.01)
+            canvas = self.matrix.SwapOnVSync(canvas)
+            time.sleep(0.05)
 
 # Main function
 # e.g. call with
