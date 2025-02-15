@@ -4,7 +4,7 @@ from parser import parse_emoji_text
 from messages import read_messages
 import random
 
-EMOJI_TEXT_SPACING = 2
+EMOJI_TEXT_SPACING = 0
 
 messages_text = read_messages()
 
